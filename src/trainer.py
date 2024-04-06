@@ -142,7 +142,7 @@ def model_drivers(
     return model, optimizer, criterion, metric, early_stopping
 
 
-def suggestd_lr(model, optimizer, criterion, device, end_lr, num_iter, train_loader):
+def suggested_lr(model, optimizer, criterion, device, end_lr, num_iter, train_loader):
     """Suggested learning rate"""
     lr_finder = LRFinder(model, optimizer, criterion, device=device)
     lr_finder.range_test(
