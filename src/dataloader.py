@@ -29,11 +29,19 @@ def get_data_loader(
 ):
     """Data loader for the CIFAR10 dataset"""
     # Loading custom datasets
-    train_dateset = CifarDS(train_dateset.data, train_dateset.targets, train_transforms)
+    if train_dateset is not None:
+        train_dateset = CifarDS(
+            train_dateset.data, train_dateset.targets, train_transforms
+        )
+        # train dataloader
+        train_loader = DataLoader(train_dateset, **dataloader_args)
+
+    else:
+        train_loader = None
+        train_dateset = None
+
     test_dateset = CifarDS(test_dateset.data, test_dateset.targets, test_transforms)
-    # train dataloader
-    train_loader = DataLoader(train_dateset, **dataloader_args)
     # test dataloader
     test_loader = DataLoader(test_dateset, **dataloader_args)
 
-    return train_loader, test_loader
+    return train_dateset, train_loader, test_dateset, test_loader

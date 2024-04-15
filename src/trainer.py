@@ -23,7 +23,7 @@ def train_module(
 
     # setting model to train mode
     model.train()
-    pbar = tqdm(train_dataloader)
+    pbar = tqdm(iterable=train_dataloader, desc="training", colour="green")
 
     # batch metrics
     train_loss = 0
@@ -82,7 +82,7 @@ def test_module(
 ):
     # setting model to eval mode
     model.eval()
-    pbar = tqdm(test_dataloader)
+    pbar = tqdm(test_dataloader, desc="testing", colour="red")
 
     # batch metrics
     test_loss = 0
@@ -128,10 +128,16 @@ def model_drivers(
     num_classes: int,
     model_name: str,
     device: torch.device,
+    optimizer_type: str = "adam",
 ):
     """Initialize drivers for training"""
     # optmizer
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    if optimizer_type == "adam":
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
+    elif optimizer_type == "sgd":
+        optimizer = optim.SGD(
+            model.parameters(), lr=learning_rate, momentum=0.9, weight_decay=1e-4
+        )
     # loss
     criterion = nn.CrossEntropyLoss()
     # metric
@@ -139,20 +145,20 @@ def model_drivers(
     # Early stopping
     early_stopping = EarlyStopping(patience=5, verbose=True, model_name=model_name)
 
-    return model, optimizer, criterion, metric, early_stopping
+    return optimizer, criterion, metric, early_stopping
 
 
 def suggested_lr(model, optimizer, criterion, device, end_lr, num_iter, train_loader):
     """Suggested learning rate"""
     lr_finder = LRFinder(model, optimizer, criterion, device=device)
     lr_finder.range_test(
-        train_loader, end_lr=end_lr, num_iter=num_iter, step_mode="linear"
+        train_loader, end_lr=end_lr, num_iter=num_iter, step_mode="exp"
     )
     lr_finder.plot()
     lr_finder.reset()
 
 
-def lr_scheduler(type, *args, **kwargs):
+def get_lr_scheduler(type, *args, **kwargs):
     if type == "StepLR":
         return StepLR(*args, **kwargs)
     elif type == "ExponentialLR":
