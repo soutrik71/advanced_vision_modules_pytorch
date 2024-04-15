@@ -166,3 +166,39 @@ def get_lr_scheduler(type, *args, **kwargs):
 
     elif type == "CyclicLR":
         return OneCycleLR(*args, **kwargs)
+
+
+def eval_module(
+    model: torch.nn.Module,
+    device: torch.device,
+    test_dataloader: torch.utils.data.DataLoader,
+):
+    """
+    Evaluate the model on the test set.
+    """
+    # setting model to eval mode
+    model.eval()
+    pbar = tqdm(test_dataloader, desc="Evaluation", dynamic_ncols=True)
+
+    # batch metrics
+    predictions = []
+    actuals = []
+
+    with torch.inference_mode():
+        for idx, (data, label) in enumerate(pbar):
+            data, label = data.to(device), label.to(device)
+            actuals.append(label)
+            # predictions
+            preds = model(data)
+            # print(preds.shape)
+            # print(label.shape)
+
+            # metric calc
+            preds = torch.argmax(preds, dim=1)
+
+            predictions.append(preds)
+
+    return (
+        torch.cat(actuals, dim=0).cpu().numpy(),
+        torch.cat(predictions, dim=0).cpu().numpy(),
+    )
