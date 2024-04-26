@@ -136,3 +136,5 @@ data/*
 data/
 models/*
 models/
+lightning_logs/*
+logs/*

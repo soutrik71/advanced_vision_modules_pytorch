@@ -31,3 +31,7 @@ To utilize these models, simply import them into your PyTorch project. We recomm
 
 This project is licensed under the [License Name or Link]. See the LICENSE file for details.
 
+## Tensorboard Commands
+```cli
+tensorboard --logdir ./lightning_logs
+```
