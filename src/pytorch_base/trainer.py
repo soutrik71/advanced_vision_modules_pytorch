@@ -7,7 +7,7 @@ from torch_lr_finder import LRFinder
 from torcheval.metrics import BinaryAccuracy, MulticlassAccuracy
 from tqdm import tqdm
 
-from src.helper import EarlyStopping
+from src.pytorch_base.helper import EarlyStopping
 
 
 def train_module(
