@@ -17,7 +17,9 @@ def imshow(img):
 
 
 def gardcam_imageprep(img):
-    img = np.array(img)
+    if not isinstance(img, np.ndarray):
+        img = np.array(img)
+
     img = cv2.resize(img, (224, 224))
     img = np.float32(img) / 255
     input_tensor = preprocess_image(
