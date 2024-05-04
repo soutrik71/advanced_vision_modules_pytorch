@@ -7,17 +7,18 @@ Author: Shilpaj Bhalerao
 import math
 from typing import NoReturn
 
+import matplotlib.pyplot as plt
+
 # Third-Party Imports
 import numpy as np
-import matplotlib.pyplot as plt
 import torch
-from torchsummary import summary
-from torchvision import transforms
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
+from torchsummary import summary
+from torchvision import transforms
 
 
-def get_summary(model: 'object of model architecture', input_size: tuple) -> NoReturn:
+def get_summary(model: "object of model architecture", input_size: tuple) -> NoReturn:
     """
     Function to get the summary of the model architecture
     :param model: Object of model architecture class
@@ -69,7 +70,7 @@ def get_misclassified_data(model, device, test_loader):
 
 
 # -------------------- DATA STATISTICS --------------------
-def get_mnist_statistics(data_set, data_set_type='Train'):
+def get_mnist_statistics(data_set, data_set_type="Train"):
     """
     Function to return the statistics of the training data
     :param data_set: Training dataset
@@ -79,14 +80,14 @@ def get_mnist_statistics(data_set, data_set_type='Train'):
     train_data = data_set.train_data
     train_data = data_set.transform(train_data.numpy())
 
-    print(f'[{data_set_type}]')
-    print(' - Numpy Shape:', data_set.train_data.cpu().numpy().shape)
-    print(' - Tensor Shape:', data_set.train_data.size())
-    print(' - min:', torch.min(train_data))
-    print(' - max:', torch.max(train_data))
-    print(' - mean:', torch.mean(train_data))
-    print(' - std:', torch.std(train_data))
-    print(' - var:', torch.var(train_data))
+    print(f"[{data_set_type}]")
+    print(" - Numpy Shape:", data_set.train_data.cpu().numpy().shape)
+    print(" - Tensor Shape:", data_set.train_data.size())
+    print(" - min:", torch.min(train_data))
+    print(" - max:", torch.max(train_data))
+    print(" - mean:", torch.mean(train_data))
+    print(" - std:", torch.std(train_data))
+    print(" - var:", torch.var(train_data))
 
     dataiter = next(iter(data_set))
     images, labels = dataiter[0], dataiter[1]
@@ -95,7 +96,7 @@ def get_mnist_statistics(data_set, data_set_type='Train'):
     print(labels)
 
     # Let's visualize some of the images
-    plt.imshow(images[0].numpy().squeeze(), cmap='gray')
+    plt.imshow(images[0].numpy().squeeze(), cmap="gray")
 
 
 def get_cifar_property(images, operation):
@@ -104,13 +105,13 @@ def get_cifar_property(images, operation):
     :param images: Get the property value on the images
     :param operation: Mean, std, Variance, etc
     """
-    param_r = eval('images[:, 0, :, :].' + operation + '()')
-    param_g = eval('images[:, 1, :, :].' + operation + '()')
-    param_b = eval('images[:, 2, :, :].' + operation + '()')
+    param_r = eval("images[:, 0, :, :]." + operation + "()")
+    param_g = eval("images[:, 1, :, :]." + operation + "()")
+    param_b = eval("images[:, 2, :, :]." + operation + "()")
     return param_r, param_g, param_b
 
 
-def get_cifar_statistics(data_set, data_set_type='Train'):
+def get_cifar_statistics(data_set, data_set_type="Train"):
     """
     Function to get the statistical information of the CIFAR dataset
     :param data_set: Training set of CIFAR
@@ -121,42 +122,44 @@ def get_cifar_statistics(data_set, data_set_type='Train'):
     images = torch.stack(images, dim=0).numpy()
 
     # Calculate mean over each channel
-    mean_r, mean_g, mean_b = get_cifar_property(images, 'mean')
+    mean_r, mean_g, mean_b = get_cifar_property(images, "mean")
 
     # Calculate Standard deviation over each channel
-    std_r, std_g, std_b = get_cifar_property(images, 'std')
+    std_r, std_g, std_b = get_cifar_property(images, "std")
 
     # Calculate min value over each channel
-    min_r, min_g, min_b = get_cifar_property(images, 'min')
+    min_r, min_g, min_b = get_cifar_property(images, "min")
 
     # Calculate max value over each channel
-    max_r, max_g, max_b = get_cifar_property(images, 'max')
+    max_r, max_g, max_b = get_cifar_property(images, "max")
 
     # Calculate variance value over each channel
-    var_r, var_g, var_b = get_cifar_property(images, 'var')
+    var_r, var_g, var_b = get_cifar_property(images, "var")
 
-    print(f'[{data_set_type}]')
-    print(f' - Total {data_set_type} Images: {len(data_set)}')
-    print(f' - Tensor Shape: {images[0].shape}')
-    print(f' - min: {min_r, min_g, min_b}')
-    print(f' - max: {max_r, max_g, max_b}')
-    print(f' - mean: {mean_r, mean_g, mean_b}')
-    print(f' - std: {std_r, std_g, std_b}')
-    print(f' - var: {var_r, var_g, var_b}')
+    print(f"[{data_set_type}]")
+    print(f" - Total {data_set_type} Images: {len(data_set)}")
+    print(f" - Tensor Shape: {images[0].shape}")
+    print(f" - min: {min_r, min_g, min_b}")
+    print(f" - max: {max_r, max_g, max_b}")
+    print(f" - mean: {mean_r, mean_g, mean_b}")
+    print(f" - std: {std_r, std_g, std_b}")
+    print(f" - var: {var_r, var_g, var_b}")
 
     # Let's visualize some of the images
     plt.imshow(np.transpose(images[1].squeeze(), (1, 2, 0)))
 
 
 # -------------------- GradCam --------------------
-def display_gradcam_output(data: list,
-                           classes: list[str],
-                           inv_normalize: transforms.Normalize,
-                           model: 'DL Model',
-                           target_layers: list['model_layer'],
-                           targets=None,
-                           number_of_samples: int = 10,
-                           transparency: float = 0.60):
+def display_gradcam_output(
+    data: list,
+    classes: list[str],
+    inv_normalize: transforms.Normalize,
+    model: "DL Model",
+    target_layers: list["model_layer"],
+    targets=None,
+    number_of_samples: int = 10,
+    transparency: float = 0.60,
+):
     """
     Function to visualize GradCam output on the data
     :param data: List[Tuple(image, label)]
@@ -186,16 +189,24 @@ def display_gradcam_output(data: list,
         grayscale_cam = grayscale_cam[0, :]
 
         # Get back the original image
-        img = input_tensor.squeeze(0).to('cpu')
+        img = input_tensor.squeeze(0).to("cpu")
         img = inv_normalize(img)
         rgb_img = np.transpose(img, (1, 2, 0))
         rgb_img = rgb_img.numpy()
 
         # Mix the activations on the original image
-        visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True, image_weight=transparency)
+        visualization = show_cam_on_image(
+            rgb_img, grayscale_cam, use_rgb=True, image_weight=transparency
+        )
 
         # Display the images on the plot
         plt.imshow(visualization)
-        plt.title(r"Correct: " + classes[data[i][1].item()] + '\n' + 'Output: ' + classes[data[i][2].item()])
+        plt.title(
+            r"Correct: "
+            + classes[data[i][1].item()]
+            + "\n"
+            + "Output: "
+            + classes[data[i][2].item()]
+        )
         plt.xticks([])
         plt.yticks([])
